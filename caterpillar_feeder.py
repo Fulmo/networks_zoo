@@ -2,6 +2,8 @@ import numpy as np
 from dataset_getter import prepare_data
 import pprint
 from utils import open_pickle
+import matplotlib.pyplot as plt
+import BaselineWanderRemoval as bwr
 
 def ecg_batches_generator(segment_len, batch_size, ecg_dataset):
     """
@@ -75,7 +77,6 @@ def TEST_generator_for_classifier():
     print("батч имеет форму: \\n x.shape=" + str(batch_xy[0].shape))
     print("y.shape=" + str(batch_xy[1].shape))
     pprint.pprint(batch_xy[1])
-
 
 
 if __name__ == "__main__":

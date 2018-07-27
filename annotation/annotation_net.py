@@ -1,22 +1,19 @@
 # -*- coding: utf-8 -*
-import matplotlib.pyplot as plt
-import numpy as np
-import easygui
-import pickle as pkl
-from keras.models import load_model
 import os
+
+from keras.models import load_model
+from sklearn.model_selection import train_test_split
+
 from annotation.ann_generator import (
     get_enhansed_generator
 )
-from utils import open_pickle
-from sklearn.model_selection import train_test_split
-from annotation.model import unet
-from annotation.one_lead_one_mask import unet_simple
-from utils import save_history
-from annotation.trained_model_testing import test_model
 from annotation.dice_koef import (
     dice_coef, dice_coef_loss
 )
+from annotation.models.one_lead_one_mask import unet_simple
+from annotation.trained_model_testing import test_model
+from utils import open_pickle
+from utils import save_history
 
 dataset_path = "./DSET_argentina.pkl"
 segment_len=512
@@ -76,7 +73,7 @@ def eval_models_in_folder(num_pictures):
 
 
 if __name__ == "__main__":
-    name = "apolon_annotator"
+    name = "venera_annotator"
 
     train(name)
     eval_models_in_folder(40)

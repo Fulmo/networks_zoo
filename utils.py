@@ -70,6 +70,17 @@ def show_reconstruction_by_ae(ecg_sample, name):
 
     draw_reconstruction_to_png(ecg_sample[0],prediction[0], name)
 
+def get_addon_mask(annotations_in):
+    addon = np.zeros((1, annotations_in.shape[1], 1))
+    
+    for i in range(0, annotations_in.shape[1]):
+        sum = annotations_in[:, i, 0] + annotations_in[:, i, 1] + annotations_in[:, i, 2]
+        if (sum == 0):
+                addon[0:1, i, 0:1] = 1
+        else:
+            continue
+    return addon
+
 def open_pickle(path):
     infile = open(path, 'rb')
     load_pkl = pkl.load(infile)

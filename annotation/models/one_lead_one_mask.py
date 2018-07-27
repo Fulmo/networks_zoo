@@ -1,16 +1,18 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Jul 24 15:36:02 2018
+import numpy as np
+import os
 
-@author: Fulmo
-
-"""
+import numpy as np
 from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
+from keras.callbacks import ModelCheckpoint, LearningRateScheduler
+from keras import backend as keras
 
-# (None, 512, 12) -----> (None, 512, 3)
-def unet_multimask(seg_len):
+from annotation.dice_koef import (
+    dice_coef, dice_coef_loss
+)
+# (None, 512, 1) -----> (None, 512, 1)
+def unet_simple(seg_len):
     input_size = (seg_len, 1)
     inputs = Input(input_size)
     conv1 = Conv1D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(inputs)
@@ -55,19 +57,14 @@ def unet_multimask(seg_len):
     conv9 = Conv1D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge9)
     conv9 = Conv1D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
     conv9 = Conv1D(2, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-    conv10 = Conv1D(4, 1, activation='sigmoid')(conv9)
+    conv10 = Conv1D(1, 1, activation='sigmoid')(conv9)
 
-    # (None, 512, 3) -----> (None, 3, 512)
-    x=Permute((2,1))(conv10)
-    # softmax for each row (3 channel) in 512
-    seg=Activation("softmax")(x)
+    model = Model(inputs=inputs, outputs=conv10, name="unet")
 
-    model = Model(inputs=inputs, outputs=seg, name="unet")
-
-    model.compile(optimizer=Adam(lr=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=Adam(lr=1e-4), loss=dice_coef_loss, metrics=[dice_coef])
 
     model.summary()
     return model
 
 if __name__ == "__main__":
-    unet_multimask(seg_len=512)
+    unet_simple(seg_len=512)
